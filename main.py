@@ -21,12 +21,11 @@ signal.signal(signal.SIGINT, end_read)
 MIFAREReader = MFRC522.MFRC522()
 
 # Welcome message
-print "Welcome to the MFRC522 data read example"
+print "Welcome to the RFID person information register system"
 print "Press Ctrl-C to stop."
-
+print "Please use your Card to Approach the sensor"
 # This loop keeps checking for chips. If one is near it will get the UID and authenticate
 while continue_reading:
-    
     # Scan for cards    
     (status,TagType) = MIFAREReader.MFRC522_Request(MIFAREReader.PICC_REQIDL)
 
@@ -39,6 +38,14 @@ while continue_reading:
 
     # If we have the UID, continue
     if status == MIFAREReader.MI_OK:
-
-        # Print UID
-        print "Card read UID: "+str(uid[0])+str(uid[1])+str(uid[2])+str(uid[3])+str(uid[4])
+		print "Please input yuor bsic information"
+		info = {'Firstname':'Andy', 'Lastname':'Kuo', 'Age':18, 'Sex':'Male'}
+		info['Firstname'] = raw_input ("Firstname : ")
+		info['Lastname'] = raw_input ("Lastname : ")
+		info['Age'] = input("Age : ")
+		info['Sex'] = raw_input("Sex (Male or Female) : ")
+		print "Hi "+ info['Firstname'] + " " + info ['Lastname'] + " Your UID is = "
+		print "0x%X 0x%X 0x%X 0x%X 0x%X" %(uid[0],uid[1],uid[2],uid[3],uid[4]) 
+		print "Welcome to the RFID person information register system"
+		print "Press Ctrl-C to stop."
+		print "Please use your Card to Approach the sensor"
