@@ -10,7 +10,7 @@ continue_reading = True
 # Capture SIGINT for cleanup when the script is aborted
 def end_read(signal,frame):
     global continue_reading
-    print "Ctrl+C captured, ending read."
+    print "\n\033[31mCtrl+C captured, ending read.\033[m"
     continue_reading = False
     GPIO.cleanup()
 
@@ -21,9 +21,9 @@ signal.signal(signal.SIGINT, end_read)
 MIFAREReader = MFRC522.MFRC522()
 
 # Welcome message
-print "Welcome to the RFID person information register system"
-print "Press Ctrl-C to stop."
-print "Please use your Card to Approach the sensor"
+print "\033[32mWelcome to the \033[33mRFID \033[32mperson information register system\033[m"
+print "\033[32mPress \033[31mCtrl-C\033[m \033[32mto stop\033[m"
+print "Please use your \033[33mCard\033[m to Approach the sensor"
 # This loop keeps checking for chips. If one is near it will get the UID and authenticate
 while continue_reading:
     # Scan for cards    
@@ -31,14 +31,14 @@ while continue_reading:
 
     # If a card is found
     if status == MIFAREReader.MI_OK:
-        print "Card detected"
+        print "\033[32mCard detected\033[m"
     
     # Get the UID of the card
     (status,uid) = MIFAREReader.MFRC522_Anticoll()
 
     # If we have the UID, continue
     if status == MIFAREReader.MI_OK:
-		print "Card's UID is = 0x%X %X %X %X %X" %(uid[0],uid[1],uid[2],uid[3],uid[4]) 	
+		print "Card's UID is = \033[33m0x%X %X %X %X %X\033[m" %(uid[0],uid[1],uid[2],uid[3],uid[4]) 	
 		print ""
 		#MySQL Connect
 		db = MySQLdb.connect("127.0.0.1","pi","make","RFID")
@@ -59,11 +59,11 @@ while continue_reading:
 				SEX = row[3]
 				AGE = row[4]
 
-			print "UID = 0x%s,Your Name=%s %s,%s %s"%\
+			print "UID = \033[33m0x%s\033[m,Your Name=\033[36m%s %s\033[m,\033[32m%s\033[m \033[35m%s\033[m Years Old"%\
 						(UID,FIRSTNAME,LASTNAME,SEX,AGE)
 			print ""
 			#MySQL Delete Data
-			Delete_answer = raw_input("Do you want to delete yout information ?(Y/N):")
+			Delete_answer = raw_input("Do you want to \033[1;31mDELETE\033[m your information ?(Y/N):")
 			if Delete_answer == 'Y' or Delete_answer == 'y':
 				sql = """DELETE FROM basicInformation WHERE `UID`=0x%s"""%(UID)
 				try:
@@ -74,7 +74,7 @@ while continue_reading:
 					db.rollback()
 			#MySQL Data UPDATE
 			else:
-				Change_answer = raw_input("Do you want to change your information ?(Y/N):")
+				Change_answer = raw_input("Do you want to \033[1;34mCHANGE\033[m your information ?(Y/N):")
 				if Change_answer == 'Y' or Change_answer == 'y':
 					print "Please input yuor bsic information"
 					info = {'Firstname':'Andy', 'Lastname':'Kuo', 'Age':18, 'Sex':'Male'}
@@ -93,7 +93,7 @@ while continue_reading:
 						db.rollback()
 		#MySQL Add New Information
 		else:
-			Add_answer = raw_input("Do you want to Add your information ?(Y/N):")
+			Add_answer = raw_input("Do you want to \033[1;32mADD\033[m your information ?(Y/N):")
 			if Add_answer == 'Y' or Add_answer == 'y':
 				db.rollback()
 				#Input Data
@@ -116,6 +116,6 @@ while continue_reading:
 		db.close()
 		#Welcome Meaasge	
 		print ""
-		print "Welcome to the RFID person information register system"
-		print "Press Ctrl-C to stop."
-		print "Please use your Card to Approach the sensor"
+		print "\033[32mWelcome to the \033[33mRFID \033[32mperson information register system\033[m"
+		print "\033[32mPress \033[31mCtrl-C\033[m \033[32mto stop\033[m"
+		print "Please use your \033[33mCard\033[m to Approach the sensor"
