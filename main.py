@@ -38,18 +38,33 @@ while continue_reading:
 
     # If we have the UID, continue
     if status == MIFAREReader.MI_OK:
+		print " Your UID is = "
+		print "0x%X %X %X %X %X" %(uid[0],uid[1],uid[2],uid[3],uid[4]) 	
+		#MySQL Connect
+		db = MySQLdb.connect("127.0.0.1","pi","make","RFID")
+
+		cursor = db.cursor()
+		sql = """SELECT * FROM basicInformation WHERE UID=0x%x%x%x%x%x """\
+				%(uid[0],uid[1],uid[2],uid[3],uid[4])
+		cursor.execute(sql)
+		results = cursor.fetchall()
+		for row in results:
+				UID = row[0]
+				FIRSTNAME = row[1]
+				LASTNAME = row[2]
+				SEX = row[3]
+				AGE = row[4]
+				print "Hi 0x%h Your name is: %s %s.You are %d years old, %s"\
+						%(UID,FIRSTNAME,LASTNAME,AGE,SEX)
+		
+		#Input Data
 		print "Please input yuor bsic information"
 		info = {'Firstname':'Andy', 'Lastname':'Kuo', 'Age':18, 'Sex':'Male'}
 		info['Firstname'] = raw_input ("Firstname : ")
 		info['Lastname'] = raw_input ("Lastname : ")
 		info['Age'] = input("Age : ")
 		info['Sex'] = raw_input("Sex (Male or Female) : ")
-		print "Hi "+ info['Firstname'] + " " + info ['Lastname'] + " Your UID is = "
-		print "0x%X 0x%X 0x%X 0x%X 0x%X" %(uid[0],uid[1],uid[2],uid[3],uid[4]) 
-		db = MySQLdb.connect("127.0.0.1","pi","make","RFID")
-
-		cursor = db.cursor()
-
+#MySQL Data INSERT
 		sql = """INSERT INTO basicInformation(UID,FIRSTNAME,LASTNAME,AGE,SEX)
 				VALUES(0x%x%x%x%x%x,'%s','%s',%s,'%s')""" \
 				%(uid[0],uid[1],uid[2],uid[3],uid[4],info['Firstname'],info['Lastname'],info['Age'],info['Sex'])
@@ -59,7 +74,7 @@ while continue_reading:
 		except:
 			db.rollback()
 		db.close()
+		#Welcome Meaasge	
 		print "Welcome to the RFID person information register system"
 		print "Press Ctrl-C to stop."
 		print "Please use your Card to Approach the sensor"
-
