@@ -38,8 +38,8 @@ while continue_reading:
 
     # If we have the UID, continue
     if status == MIFAREReader.MI_OK:
-		print " Your UID is = "
-		print "0x%X %X %X %X %X" %(uid[0],uid[1],uid[2],uid[3],uid[4]) 	
+		print "Card's UID is = 0x%X %X %X %X %X" %(uid[0],uid[1],uid[2],uid[3],uid[4]) 	
+		print ""
 		#MySQL Connect
 		db = MySQLdb.connect("127.0.0.1","pi","make","RFID")
 
@@ -59,9 +59,27 @@ while continue_reading:
 				SEX = row[3]
 				AGE = row[4]
 
-				print "UID = 0x%s,Your Name=%s %s,%s %s"%\
+			print "UID = 0x%s,Your Name=%s %s,%s %s"%\
 						(UID,FIRSTNAME,LASTNAME,SEX,AGE)
-				print""
+			print ""
+			Change_answer = raw_input("Do you want to change your information ?(Y/N):")
+			if Change_answer == 'Y' or Change_answer == 'y':
+				print "Please input yuor bsic information"
+				info = {'Firstname':'Andy', 'Lastname':'Kuo', 'Age':18, 'Sex':'Male'}
+				info['Firstname'] = raw_input ("Firstname : ")
+				info['Lastname'] = raw_input ("Lastname : ")
+				info['Age'] = input("Age : ")
+				info['Sex'] = raw_input("Sex (Male or Female) : ")
+				#MySQL Data UPDATE
+				sql = """UPDATE basicInformation SET 
+					`FIRSTNAME`='%s', `LASTNAME` = '%s', `SEX` = '%s', `AGE`=%d WHERE `UID`=0x%s""" \
+				%(info['Firstname'],info['Lastname'],info['Sex'],info['Age'],UID)
+				try:
+					cursor.execute(sql)
+					db.commit()
+				except:
+					print "error"
+					db.rollback()
 		else:
 			db.rollback()
 			#Input Data
@@ -82,6 +100,7 @@ while continue_reading:
 				db.rollback()
 		db.close()
 		#Welcome Meaasge	
+		print ""
 		print "Welcome to the RFID person information register system"
 		print "Press Ctrl-C to stop."
 		print "Please use your Card to Approach the sensor"
