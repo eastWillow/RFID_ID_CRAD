@@ -7,11 +7,8 @@ db = MySQLdb.connect("127.0.0.1","pi","make","RFID")
 
 cursor = db.cursor()
 
-sql = "INSERT INTO BASICINFORMATION (FIRSTNAME, LASTNAME, AGE, SEX \
-		UID0, UID1, UID2, UID3, UID4) \
-		VALUES \
-		('%s', '%s', '%d', '%s', '%x', '%x', '%x', '%x', '%x')" % \
-		('Andy', 'Kuo', 18, 'Male', 0x5a, 0x6a, 0x6c, 0xbf, 0x12)
+sql = """INSERT INTO basicInformation(UID,FIRSTNAME,LASTNAME,AGE,SEX)
+		VALUES(%s,'%s','%s',%s,'%s')""" %('0x5566778899','Andy','Kuo','18','Male')
 try:
 	cursor.execute(sql)
 	db.commit()

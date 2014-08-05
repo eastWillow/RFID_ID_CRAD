@@ -4,7 +4,7 @@
 import RPi.GPIO as GPIO
 import MFRC522
 import signal
-
+import MySQLdb
 continue_reading = True
 
 # Capture SIGINT for cleanup when the script is aborted
@@ -46,6 +46,20 @@ while continue_reading:
 		info['Sex'] = raw_input("Sex (Male or Female) : ")
 		print "Hi "+ info['Firstname'] + " " + info ['Lastname'] + " Your UID is = "
 		print "0x%X 0x%X 0x%X 0x%X 0x%X" %(uid[0],uid[1],uid[2],uid[3],uid[4]) 
+		db = MySQLdb.connect("127.0.0.1","pi","make","RFID")
+
+		cursor = db.cursor()
+
+		sql = """INSERT INTO basicInformation(UID,FIRSTNAME,LASTNAME,AGE,SEX)
+				VALUES(0x%x%x%x%x%x,'%s','%s',%s,'%s')""" \
+				%(uid[0],uid[1],uid[2],uid[3],uid[4],info['Firstname'],info['Lastname'],info['Age'],info['Sex'])
+		try:
+			cursor.execute(sql)
+			db.commit()
+		except:
+			db.rollback()
+		db.close()
 		print "Welcome to the RFID person information register system"
 		print "Press Ctrl-C to stop."
 		print "Please use your Card to Approach the sensor"
+
