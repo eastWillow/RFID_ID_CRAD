@@ -2,7 +2,6 @@
 #!/usr/bin/python
 
 import MySQLdb
-import binascii
 
 db = MySQLdb.connect("127.0.0.1","pi","make","RFID")
 

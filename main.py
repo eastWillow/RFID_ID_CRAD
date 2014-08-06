@@ -5,8 +5,15 @@ import RPi.GPIO as GPIO
 import MFRC522
 import signal
 import MySQLdb
+import datetime
+import time
+t = time.time()
 continue_reading = True
-
+welcome_message = """
+\033[32mWelcome to the \033[33mRFID \033[32mperson information register system\033[m \t
+\033[32mPress \033[31mCtrl-C\033[m \033[32mto stop\033[m\t
+Please use your \033[33mCard\033[m to Approach the sensor
+"""
 # Capture SIGINT for cleanup when the script is aborted
 def end_read(signal,frame):
     global continue_reading
@@ -21,9 +28,7 @@ signal.signal(signal.SIGINT, end_read)
 MIFAREReader = MFRC522.MFRC522()
 
 # Welcome message
-print "\033[32mWelcome to the \033[33mRFID \033[32mperson information register system\033[m"
-print "\033[32mPress \033[31mCtrl-C\033[m \033[32mto stop\033[m"
-print "Please use your \033[33mCard\033[m to Approach the sensor"
+print welcome_message
 # This loop keeps checking for chips. If one is near it will get the UID and authenticate
 while continue_reading:
     # Scan for cards    
@@ -62,7 +67,41 @@ while continue_reading:
 			print "UID = \033[33m0x%s\033[m,Your Name=\033[36m%s %s\033[m,\033[32m%s\033[m \033[35m%s\033[m Years Old"%\
 						(UID,FIRSTNAME,LASTNAME,SEX,AGE)
 			print ""
-			#MySQL Delete Data
+			#MySQL Read Item List
+			sql = """SELECT * FROM itemList WHERE OWENER_UID=0x%x%x%x%x%x"""%(uid[0],uid[1],uid[2],uid[3],uid[4])
+			cursor.execute(sql)
+			listCount = cursor.rowcount
+			print "You Have %d Item(s)"%(listCount)
+			if listCount > 0:
+					Display_items = raw_input("Do you Want to Display \033[1;31mALL\033[m Items?(Y/N)")
+					if Display_items == 'Y' or Display_items == 'y':
+						results = cursor.fetchall()
+						for row in results:
+								ITEM_ID = row[0]
+								OWENER_ID = row[1].encode('hex')
+								STORAGE_TIME = row[2]
+								EXPIRATION_DATE = row[3]
+								ITEM_NAME = row[4]
+								print "ID:%d 0x%s StorageTime:%s ExpirationTime:%s Name:%s"\
+									%(ITEM_ID, OWENER_ID, STORAGE_TIME, EXPIRATION_DATE, ITEM_NAME)
+			#MySQL Delete Item
+			#Delete_answer = raw_input("Do you want to \033[1;31mDELETE\033[m your information ?(Y/N):")
+			#MySQL Add new Items
+			Add_new_item_answer = raw_input("Do you want to \033[1;32mADD\033[m New Item?(Y/N)")
+			if Add_new_item_answer == 'y' or Add_new_item_answer == 'Y':
+					ITEM_NAME = raw_input("Please Input Item Name:")
+					EXPIRATION_DATE = raw_input("Please Input EXPIRATION_DATE(1000-01-01):")
+					sql = """INSERT INTO `itemList` (`OWENER_UID` , `ITEM_NAME`, `EXPIRATION_DATE`, `STORAGE_TIME`)\
+							VALUES (0x%s, '%s', '%s','%s')""" \
+							%(UID, ITEM_NAME, EXPIRATION_DATE, \
+							datetime.datetime.fromtimestamp(t).strftime('%Y-%m-%d %H:%M:%S'))
+					try:
+						cursor.execute(sql)
+						db.commit
+						print ("Add New Item SUCCESS")
+					except:
+						db.rollback()
+			#Delete basic inforamtion
 			Delete_answer = raw_input("Do you want to \033[1;31mDELETE\033[m your information ?(Y/N):")
 			if Delete_answer == 'Y' or Delete_answer == 'y':
 				sql = """DELETE FROM basicInformation WHERE `UID`=0x%s"""%(UID)
@@ -113,9 +152,8 @@ while continue_reading:
 					print"Add Done"
 				except:
 					db.rollback()
+					
 		db.close()
 		#Welcome Meaasge	
 		print ""
-		print "\033[32mWelcome to the \033[33mRFID \033[32mperson information register system\033[m"
-		print "\033[32mPress \033[31mCtrl-C\033[m \033[32mto stop\033[m"
-		print "Please use your \033[33mCard\033[m to Approach the sensor"
+		print welcome_message
