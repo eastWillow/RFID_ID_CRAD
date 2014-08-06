@@ -84,6 +84,11 @@ while continue_reading:
 								ITEM_NAME = row[4]
 								print "ID:%d 0x%s StorageTime:%s ExpirationTime:%s Name:%s"\
 									%(ITEM_ID, OWENER_ID, STORAGE_TIME, EXPIRATION_DATE, ITEM_NAME)
+			#MySQL itemList Auto_Increment reset
+			else:
+				sql ="ALTER TABLE itemList AUTO_INCREMENT = 1"
+				cursor.execute(sql)
+				db.commit()
 			#MySQL Delete Item
 			#Delete_answer = raw_input("Do you want to \033[1;31mDELETE\033[m your information ?(Y/N):")
 			#MySQL Add new Items
