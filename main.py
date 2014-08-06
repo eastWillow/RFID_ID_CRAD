@@ -97,7 +97,7 @@ while continue_reading:
 							datetime.datetime.fromtimestamp(t).strftime('%Y-%m-%d %H:%M:%S'))
 					try:
 						cursor.execute(sql)
-						db.commit
+						db.commit()
 						print ("Add New Item SUCCESS")
 					except:
 						db.rollback()
