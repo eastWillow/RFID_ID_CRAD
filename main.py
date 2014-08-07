@@ -84,6 +84,16 @@ while continue_reading:
 								ITEM_NAME = row[4]
 								print "ID:%d 0x%s StorageTime:%s ExpirationTime:%s Name:%s"\
 									%(ITEM_ID, OWENER_ID, STORAGE_TIME, EXPIRATION_DATE, ITEM_NAME)
+					Delete_exist_item = raw_input("Do you want to \033[1;31mDelete\033[m Items?(Y/N)")
+					if Delete_exist_item == 'Y' or Delete_exist_item == 'y':
+						Which_to_delete = raw_input("Which ID Do Tou Want to Delete?:")
+						sql = """DELETE FROM itemList WHERE `ITEM_ID`=%s"""%(Which_to_delete)
+						try:
+							cursor.execute(sql)
+							db.commit()
+							print("SUCCESS DELETE %s")%(Which_to_delete)
+						except:
+							db.rollback()
 			#MySQL itemList Auto_Increment reset
 			else:
 				sql ="ALTER TABLE itemList AUTO_INCREMENT = 1"
