@@ -106,35 +106,36 @@ while continue_reading:
 						print ("Add New Item SUCCESS")
 					except:
 						db.rollback()
-			#Delete basic inforamtion
-			Delete_answer = raw_input("Do you want to \033[1;31mDELETE\033[m your information ?(Y/N):")
-			if Delete_answer == 'Y' or Delete_answer == 'y':
-				sql = """DELETE FROM basicInformation WHERE `UID`=0x%s"""%(UID)
-				try:
-					cursor.execute(sql)
-					db.commit()
-					print "Delete Done"
-				except:
-					db.rollback()
-			#MySQL Data UPDATE
-			else:
-				Change_answer = raw_input("Do you want to \033[1;34mCHANGE\033[m your information ?(Y/N):")
-				if Change_answer == 'Y' or Change_answer == 'y':
-					print "Please input yuor bsic information"
-					info = {'Firstname':'Andy', 'Lastname':'Kuo', 'Age':18, 'Sex':'Male'}
-					info['Firstname'] = raw_input ("Firstname : ")
-					info['Lastname'] = raw_input ("Lastname : ")
-					info['Age'] = input("Age : ")
-					info['Sex'] = raw_input("Sex (Male or Female) : ")
-					sql = """UPDATE basicInformation SET 
-						`FIRSTNAME`='%s', `LASTNAME` = '%s', `SEX` = '%s', `AGE`=%d WHERE `UID`=0x%s""" \
-						%(info['Firstname'],info['Lastname'],info['Sex'],info['Age'],UID)
+			if not (Display_items == 'Y' or Display_items == 'y'):
+				#Delete basic inforamtion
+				Delete_answer = raw_input("Do you want to \033[1;31mDELETE\033[m your information ?(Y/N):")
+				if Delete_answer == 'Y' or Delete_answer == 'y':
+					sql = """DELETE FROM basicInformation WHERE `UID`=0x%s"""%(UID)
 					try:
 						cursor.execute(sql)
 						db.commit()
-						print "Change Done"
+						print "Delete Done"
 					except:
 						db.rollback()
+				#MySQL Data UPDATE
+				else:
+					Change_answer = raw_input("Do you want to \033[1;34mCHANGE\033[m your information ?(Y/N):")
+					if Change_answer == 'Y' or Change_answer == 'y':
+						print "Please input yuor bsic information"
+						info = {'Firstname':'Andy', 'Lastname':'Kuo', 'Age':18, 'Sex':'Male'}
+						info['Firstname'] = raw_input ("Firstname : ")
+						info['Lastname'] = raw_input ("Lastname : ")
+						info['Age'] = input("Age : ")
+						info['Sex'] = raw_input("Sex (Male or Female) : ")
+						sql = """UPDATE basicInformation SET 
+							`FIRSTNAME`='%s', `LASTNAME` = '%s', `SEX` = '%s', `AGE`=%d WHERE `UID`=0x%s""" \
+							%(info['Firstname'],info['Lastname'],info['Sex'],info['Age'],UID)
+						try:
+							cursor.execute(sql)
+							db.commit()
+							print "Change Done"
+						except:
+							db.rollback()
 		#MySQL Add New Information
 		else:
 			Add_answer = raw_input("Do you want to \033[1;32mADD\033[m your information ?(Y/N):")
