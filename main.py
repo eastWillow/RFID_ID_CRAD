@@ -79,44 +79,40 @@ while continue_reading:
 						for row in results:
 								ITEM_ID = row[0]
 								OWENER_ID = row[1].encode('hex')
-								STORAGE_TIME = row[2]
-								EXPIRATION_DATE = row[3]
-								ITEM_NAME = row[4]
-								print "ID:%d 0x%s StorageTime:%s ExpirationTime:%s Name:%s"\
-									%(ITEM_ID, OWENER_ID, STORAGE_TIME, EXPIRATION_DATE, ITEM_NAME)
-					Delete_exist_item = raw_input("Do you want to \033[1;31mDelete\033[m Items?(Y/N)")
-					if Delete_exist_item == 'Y' or Delete_exist_item == 'y':
-						Which_to_delete = raw_input("Which ID Do Tou Want to Delete?:")
-						sql = """DELETE FROM itemList WHERE `ITEM_ID`=%s"""%(Which_to_delete)
-						try:
-							cursor.execute(sql)
-							db.commit()
-							print("SUCCESS DELETE ITEM_ID:%s")%(Which_to_delete)
-						except:
-							db.rollback()
-			#MySQL itemList Auto_Increment reset
-			else:
-				sql ="ALTER TABLE itemList AUTO_INCREMENT = 1"
-				cursor.execute(sql)
-				db.commit()
-			#MySQL Delete Item
-			#Delete_answer = raw_input("Do you want to \033[1;31mDELETE\033[m your information ?(Y/N):")
+								OWENER_NAME = row[2]
+								ITEM_NAME = row[3]
+								STORAGE_TIME = row[4]
+								EXPIRATION_DATE = row[5]
+								print "ID:%d 0x%s Owener:%s ItemName:%s Storage:%s Expiration:%s"\
+									%(ITEM_ID, OWENER_ID, OWENER_NAME, ITEM_NAME, STORAGE_TIME, EXPIRATION_DATE)
+						#MySQL Delete Item
+						Delete_exist_item = raw_input("Do you want to \033[1;31mDelete\033[m Items?(Y/N)")
+						if Delete_exist_item == 'Y' or Delete_exist_item == 'y':
+							Which_to_delete = raw_input("Which ID Do Tou Want to Delete?:")
+							sql = """DELETE FROM itemList WHERE `ITEM_ID`=%s"""%(Which_to_delete)
+							try:
+								cursor.execute(sql)
+								db.commit()
+								print("SUCCESS DELETE ITEM_ID:%s")%(Which_to_delete)
+							except:
+								db.rollback()
 			#MySQL Add new Items
 			Add_new_item_answer = raw_input("Do you want to \033[1;32mADD\033[m New Item?(Y/N)")
 			if Add_new_item_answer == 'y' or Add_new_item_answer == 'Y':
 					ITEM_NAME = raw_input("Please Input Item Name:")
 					EXPIRATION_DATE = raw_input("Please Input EXPIRATION_DATE(1000-01-01):")
-					sql = """INSERT INTO `itemList` (`OWENER_UID` , `ITEM_NAME`, `EXPIRATION_DATE`, `STORAGE_TIME`)\
-							VALUES (0x%s, '%s', '%s','%s')""" \
+					sql = """INSERT INTO `itemList` (`OWENER_UID` , `ITEM_NAME`, `EXPIRATION_DATE`, `STORAGE_TIME`,`OWENER_NAME`)\
+							VALUES (0x%s, '%s', '%s','%s','%s')""" \
 							%(UID, ITEM_NAME, EXPIRATION_DATE, \
-							datetime.datetime.fromtimestamp(t).strftime('%Y-%m-%d %H:%M:%S'))
+							datetime.datetime.fromtimestamp(t).strftime('%Y-%m-%d %H:%M:%S'), \
+							FIRSTNAME+LASTNAME)
 					try:
 						cursor.execute(sql)
 						db.commit()
 						print ("Add New Item SUCCESS")
 					except:
 						db.rollback()
-			if not (Display_items == 'Y' or Display_items == 'y'):
+			if not (Add_new_item_answer == 'Y' or Add_new_item_answer == 'y'):
 				#Delete basic inforamtion
 				Delete_answer = raw_input("Do you want to \033[1;31mDELETE\033[m your information ?(Y/N):")
 				if Delete_answer == 'Y' or Delete_answer == 'y':
@@ -127,6 +123,7 @@ while continue_reading:
 						print "Delete Done"
 					except:
 						db.rollback()
+						print "Please Delete All of Your Item"
 				#MySQL Data UPDATE
 				else:
 					Change_answer = raw_input("Do you want to \033[1;34mCHANGE\033[m your information ?(Y/N):")
