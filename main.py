@@ -91,7 +91,7 @@ while continue_reading:
 						try:
 							cursor.execute(sql)
 							db.commit()
-							print("SUCCESS DELETE %s")%(Which_to_delete)
+							print("SUCCESS DELETE ITEM_ID:%s")%(Which_to_delete)
 						except:
 							db.rollback()
 			#MySQL itemList Auto_Increment reset
